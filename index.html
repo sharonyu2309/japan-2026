@@ -2,66 +2,100 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2026 日本中部北陸 櫻花獨旅全攻略</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #D6336C; --secondary: #4A90E2; --bg: #F8F9FA; --card-bg: #FFFFFF; --text: #333; --border: #e0e0e0;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        /* 全域 RWD 設定 */
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
         
-        .top-bar { background: #2C3E50; color: white; padding: 10px 20px; text-align: center; font-size: 0.85em; }
-        .top-bar a { color: #82CCDD; text-decoration: none; margin: 0 4px; font-weight: bold; border: 1px solid #82CCDD; border-radius: 4px; padding: 3px 8px; transition: 0.2s; display: inline-block; margin-top:5px;}
+        /* 頂部工具列 RWD */
+        .top-bar { background: #2C3E50; color: white; padding: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; font-size: 0.85em; }
+        .top-bar a { color: #82CCDD; text-decoration: none; font-weight: bold; border: 1px solid #82CCDD; border-radius: 4px; padding: 5px 10px; transition: 0.2s; white-space: nowrap; }
         .top-bar a:hover { background: #82CCDD; color: #2C3E50; }
 
-        header { background: linear-gradient(135deg, var(--primary), #ffb7c5); color: white; padding: 25px; text-align: center; }
-        header h1 { margin: 0; font-size: 1.8em; }
+        header { background: linear-gradient(135deg, var(--primary), #ffb7c5); color: white; padding: clamp(15px, 4vw, 25px); text-align: center; }
+        header h1 { margin: 0; font-size: clamp(1.4em, 5vw, 1.8em); }
 
-        .tab-container { display: flex; justify-content: center; background: white; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .tab-btn { background: none; border: none; padding: 15px 25px; font-size: 1.05em; font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; }
+        /* 頁籤導覽 RWD */
+        .tab-container { display: flex; flex-wrap: wrap; background: white; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn { flex: 1 1 auto; background: none; border: none; padding: 12px; font-size: clamp(0.95em, 3vw, 1.05em); font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; text-align: center; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-        .page { display: none; padding: 20px; max-width: 1250px; margin: 0 auto; }
+        .page { display: none; padding: 15px; max-width: 1250px; margin: 0 auto; width: 100%; }
         .page.active { display: block; }
 
-        table { width: 100%; background: white; border-collapse: collapse; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; margin-top: 10px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95em; }
+        /* 表格 RWD 容器 */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: 8px; margin-top: 10px; background: white; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; /* 強制在小螢幕出現捲軸保護排版 */ }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95em; }
         th { background-color: #FFF0F2; color: var(--primary); white-space: nowrap; }
-        tr.day-row { background-color: #fce4ec; font-weight: bold; color: var(--primary); font-size: 1.1em; }
-        .map-link { color: var(--secondary); text-decoration: none; font-weight: bold; }
+        tr.day-row { background-color: #fce4ec; font-weight: bold; color: var(--primary); font-size: 1.05em; }
+        .map-link { color: var(--secondary); text-decoration: none; font-weight: bold; word-break: break-word; }
 
-        .db-container { display: flex; gap: 20px; }
-        .sidebar { width: 280px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: fit-content; position: sticky; top: 75px; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; }
-        .card { background: var(--card-bg); border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid var(--secondary); display: flex; flex-direction: column; }
-        .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; margin-right: 5px; margin-bottom: 8px; background: #eee; }
-        
-        .acc-table select, .acc-table input { width: 95%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9em; }
-        .sum-card { flex: 1; background: #FFF0F2; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid var(--primary); }
+        /* 查詢分頁 RWD */
+        .db-container { display: flex; flex-direction: row; gap: 20px; }
+        .sidebar { width: 280px; flex-shrink: 0; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: fit-content; position: sticky; top: 75px; }
+        .search-box { width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid var(--primary); border-radius: 6px; font-size: 1em; }
+        .filter-group { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .filter-group h4 { margin: 0 0 10px 0; color: var(--primary); font-size: 1.05em; }
+        .filter-label { display: block; margin-bottom: 8px; cursor: pointer; font-size: 0.95em; }
 
-        /* 新增：記帳本摺疊樣式 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; width: 100%; }
+        .card { background: var(--card-bg); border-radius: 10px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid var(--secondary); display: flex; flex-direction: column; }
+        .card.attraction { border-left-color: #27AE60; }
+        .card.food { border-left-color: #E67E22; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; margin-right: 5px; margin-bottom: 8px; background: #eee; }
+        .info-list { list-style: none; padding: 0; margin: 0 0 15px 0; font-size: 0.9em; color: #555; flex-grow: 1;}
+        .info-list li { margin-bottom: 6px; padding-left: 18px; position: relative; line-height: 1.4; }
+        .info-list li::before { content: '▪'; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
+        .card-actions { display: flex; gap: 10px; margin-top: auto;}
+        .card-actions a { flex: 1; text-align: center; padding: 8px; border-radius: 5px; text-decoration: none; font-size: 0.95em; font-weight: bold; transition: 0.2s;}
+        .btn-map { background: #E8F4FD; color: #1877F2; border: 1px solid #1877F2; }
+        .btn-tabelog { background: #FDEDEC; color: #E74C3C; border: 1px solid #E74C3C; }
+
+        /* 記帳本 RWD */
         .day-group { background: white; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .day-header { background: #f8f9fa; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); font-weight: bold; }
+        .day-header { background: #f8f9fa; padding: 15px; cursor: pointer; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); font-weight: bold; }
         .day-header:hover { background: #f1f1f1; }
         .day-content { padding: 15px; display: none; }
         .day-content.open { display: block; }
         .subtotal-text { color: var(--primary); font-size: 0.95em; }
+        .acc-table { width: 100%; border-collapse: collapse; min-width: 600px; /* 記帳表格維持寬度防擠壓 */ }
+        .acc-table th { background: #fff; color: #666; font-weight: normal; border-bottom: 1px solid #eee; padding: 8px; text-align: left; }
+        .acc-table input, .acc-table select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box; font-size: 0.9em; }
+        .summary-box { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; justify-content: center; }
+        .sum-card { flex: 1 1 300px; background: #FFF0F2; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid var(--primary); }
+        .sum-card p { font-size: clamp(1.4em, 4vw, 1.8em); font-weight: bold; color: var(--primary); margin: 10px 0 0 0; }
 
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .sidebar { width: auto; position: static; } .db-container { flex-direction: column; } .day-header { flex-direction: column; align-items: flex-start; gap: 10px; } }
+        /* 手機斷點調整 */
+        @media (max-width: 768px) {
+            .db-container { flex-direction: column; }
+            .sidebar { width: 100%; position: static; margin-bottom: 10px; }
+            .grid { grid-template-columns: 1fr; }
+            .day-header { flex-direction: column; align-items: flex-start; }
+            .card-actions { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
 <div class="top-bar">
-    <b>🔗 快速連結：</b>
-    <a href="https://tenki.jp/" target="_blank">🌦️ 天氣</a>
-    <a href="https://www.kamikochi.org/tw/thingstodo/walking" target="_blank">🏔️ 上高地</a>
-    <a href="https://www.hidatakayama.or.jp/eat/index.html" target="_blank">🥩 高山美食</a>
-    <a href="https://www.westjr.co.jp/global/tc/booking/online/" target="_blank">🚆 JR訂票</a>
-    <a href="https://www.kuronekoyamato.co.jp/tcn/" target="_blank">📦 黑貓行李追蹤</a>
-    <a href="tel:110" style="color:#ffb7c5">🚨 警110</a>
+    <a href="https://www.westjr.co.jp/global/tc/booking/online/" target="_blank">🚆 JR特急訂票</a>
+    <a href="https://japantravel.navitime.com/zh-tw/area/jp/timetable/00002571/00000105?direction=up" target="_blank">🚂 JR高山本線</a>
+    <a href="https://www.gltjp.com/zh-hant/article/item/20485/" target="_blank">🏔️ 上高地全指南</a>
+    <a href="https://www.kamikochi.org/tw/thingstodo/walking" target="_blank">🏔️ 上高地攻略</a>
+    <a href="https://tenki.jp/" target="_blank">🌦️ 天氣預報</a>
     <a href="tel:119" style="color:#ffb7c5">🚑 救119</a>
+    <a href="https://www-nouhibus-co-jp.translate.goog/english/highwaybus/?_x_tr_sl=en&_x_tr_tl=zh-TW&_x_tr_hl=zh-TW" target="_blank">🚌 濃飛巴士</a>
+    <a href="tel:110" style="color:#ffb7c5">🚨 警110</a>
+    <a href="https://visit-nagano.alpico.co.jp/zh-hant/timetable/takayama-matsumoto" target="_blank">🚌 高山 ⇆ 松本</a>
+    <a href="https://www.hidatakayama.or.jp/eat/index.html" target="_blank">🥩 高山美食指南</a>
+    <a href="https://www.kuronekoyamato.co.jp/tcn/" target="_blank">📦 黑貓行李追蹤</a>
 </div>
 
 <header><h1>🌸 2026 日本中部北陸 櫻花獨旅全攻略</h1></header>
@@ -73,39 +107,41 @@
 </div>
 
 <div id="page1" class="page active">
-    <table>
-        <thead><tr><th width="10%">時段</th><th width="28%">行程地點</th><th width="12%">建議停留</th><th width="22%">交通</th><th width="28%">備註/特色</th></tr></thead>
-        <tbody>
-            <tr class="day-row"><td colspan="5">📅 Day 1：4月12日 (日) - 抵達名古屋</td></tr>
-            <tr><td>下午</td><td>🛫 <b>星宇 JX838</b></td><td>-</td><td>14:55 TPE 起飛</td><td>桃園機場第一航廈 / 18:45 抵達 NGO</td></tr>
-            <tr><td>晚上</td><td>機場 → <a href="https://www.google.com/maps/search/?api=1&query=Comfort+Hotel+Nagoya+Meiekiminami" class="map-link" target="_blank">名古屋站</a></td><td>-</td><td>名鐵 μ-SKY (20:07)</td><td>車程 28 分鐘，車站超商可買季節零食</td></tr>
+    <div class="table-responsive">
+        <table>
+            <thead><tr><th width="10%">時段</th><th width="28%">行程地點</th><th width="12%">建議停留</th><th width="22%">交通</th><th width="28%">備註/特色</th></tr></thead>
+            <tbody>
+                <tr class="day-row"><td colspan="5">📅 Day 1：4月12日 (日) - 抵達名古屋</td></tr>
+                <tr><td>下午</td><td>🛫 <b>星宇 JX838</b></td><td>-</td><td>14:55 TPE 起飛</td><td>桃園機場第一航廈 / 18:45 抵達 NGO</td></tr>
+                <tr><td>晚上</td><td>機場 → <a href="https://www.google.com/maps/search/?api=1&query=Comfort+Hotel+Nagoya+Meiekiminami" class="map-link" target="_blank">名古屋站</a></td><td>-</td><td>名鐵 μ-SKY (20:07)</td><td>車程 28 分鐘，車站超商可買季節零食</td></tr>
 
-            <tr class="day-row"><td colspan="5">📅 Day 2：4月13日 (一) - 前進飛驒高山</td></tr>
-            <tr><td>上午</td><td><a href="https://www.google.com/maps/search/?api=1&query=Takayama+Station" class="map-link" target="_blank">📍 名古屋站</a> ➝ 高山</td><td>2.5 hr</td><td>JR Hida 5號</td><td>選 D 席靠窗看溪谷櫻花 (09:39-12:23)</td></tr>
-            <tr><td>下午</td><td>🌸 <a href="https://www.google.com/maps/search/?api=1&query=Garyu+Sakura" class="map-link" target="_blank">臥龍櫻</a> & <a href="https://www.google.com/maps/search/?api=1&query=Matsumoto+Bus+Terminal" class="map-link" target="_blank">江名子川</a></td><td>2.5 hr</td><td>JR 高山本線</td><td>1100年古櫻，江名子川是櫻花秘境</td></tr>
+                <tr class="day-row"><td colspan="5">📅 Day 2：4月13日 (一) - 前進飛驒高山</td></tr>
+                <tr><td>上午</td><td><a href="https://www.google.com/maps/search/?api=1&query=Takayama+Station" class="map-link" target="_blank">📍 名古屋站</a> ➝ 高山</td><td>2.5 hr</td><td>JR Hida 5號</td><td>選 D 席靠窗看溪谷櫻花 (09:39-12:23)</td></tr>
+                <tr><td>下午</td><td>🌸 <a href="https://www.google.com/maps/search/?api=1&query=Garyu+Sakura" class="map-link" target="_blank">臥龍櫻</a> & <a href="https://www.google.com/maps/search/?api=1&query=Matsumoto+Bus+Terminal" class="map-link" target="_blank">江名子川</a></td><td>2.5 hr</td><td>JR 高山本線</td><td>1100年古櫻，江名子川是櫻花秘境</td></tr>
 
-            <tr class="day-row"><td colspan="5">📅 Day 3：4月14日 (二) - 高山祭 (春之山王祭)</td></tr>
-            <tr><td>上午</td><td>🍎 <a href="https://www.google.com/maps/search/?api=1&query=Miyagawa+Morning+Market" class="map-link" target="_blank">宮川朝市</a> & 櫻花隧道</td><td>2 hr</td><td>步行</td><td>沿宮川堤櫻花步道漫步吃五平餅</td></tr>
-            <tr><td>下午</td><td>🏮 <a href="https://www.google.com/maps/search/?api=1&query=Nakabashi+Bridge+Takayama" class="map-link" target="_blank">中橋拍照</a> & 屋台展示</td><td>4 hr</td><td>步行</td><td>祭典最美核心：紅橋+華麗花車+櫻花</td></tr>
-            <tr><td>晚上</td><td>✨ <b>高山祭：夜祭</b></td><td>2.5 hr</td><td>步行</td><td>提燈籠巡遊，住高山才看得到的夢幻畫面</td></tr>
+                <tr class="day-row"><td colspan="5">📅 Day 3：4月14日 (二) - 高山祭 (春之山王祭)</td></tr>
+                <tr><td>上午</td><td>🍎 <a href="https://www.google.com/maps/search/?api=1&query=Miyagawa+Morning+Market" class="map-link" target="_blank">宮川朝市</a> & 櫻花隧道</td><td>2 hr</td><td>步行</td><td>沿宮川堤櫻花步道漫步吃五平餅</td></tr>
+                <tr><td>下午</td><td>🏮 <a href="https://www.google.com/maps/search/?api=1&query=Nakabashi+Bridge+Takayama" class="map-link" target="_blank">中橋拍照</a> & 屋台展示</td><td>4 hr</td><td>步行</td><td>祭典最美核心：紅橋+華麗花車+櫻花</td></tr>
+                <tr><td>晚上</td><td>✨ <b>高山祭：夜祭</b></td><td>2.5 hr</td><td>步行</td><td>提燈籠巡遊，住高山才看得到的夢幻畫面</td></tr>
 
-            <tr class="day-row"><td colspan="5">📅 Day 4：4月15日 (三) - 高山 ➝ 松本市</td></tr>
-            <tr><td>上午</td><td>📦 辦理行李宅配 / 高山古街</td><td>2 hr</td><td>飯店櫃檯辦理</td><td>行李寄至 4/17 名古屋，輕裝衝上高地</td></tr>
-            <tr><td>下午</td><td>🚌 高山 ➝ <a href="https://www.google.com/maps/search/?api=1&query=Toyoko+INN+Matsumoto+Station+Higashiguchi" class="map-link" target="_blank">松本飯店</a></td><td>2.5 hr</td><td>濃飛巴士 (14:50)</td><td>橫越山脈抵達松本，入住東橫INN</td></tr>
+                <tr class="day-row"><td colspan="5">📅 Day 4：4月15日 (三) - 高山 ➝ 松本市</td></tr>
+                <tr><td>上午</td><td>📦 辦理行李宅配 / 高山古街</td><td>2 hr</td><td>飯店櫃檯辦理</td><td>行李寄至 4/17 名古屋，輕裝衝上高地</td></tr>
+                <tr><td>下午</td><td>🚌 高山 ➝ <a href="https://www.google.com/maps/search/?api=1&query=Toyoko+INN+Matsumoto+Station+Higashiguchi" class="map-link" target="_blank">松本飯店</a></td><td>2.5 hr</td><td>濃飛巴士 (14:50)</td><td>橫越山脈抵達松本，入住東橫INN</td></tr>
 
-            <tr class="day-row"><td colspan="5">📅 Day 5：4月16日 (四) - 松本古城藝術</td></tr>
-            <tr><td>上午</td><td>🎨 <a href="https://www.google.com/maps/search/?api=1&query=Matsumoto+City+Museum+of+Art" class="map-link" target="_blank">松本市美術館</a></td><td>1.5 hr</td><td>步行</td><td>草間彌生點點展，標誌性大南瓜</td></tr>
-            <tr><td>下午</td><td>🏯 <a href="https://www.google.com/maps/search/?api=1&query=Matsumoto+Castle" class="map-link" target="_blank">國寶松本城</a> & <a href="https://www.google.com/maps/search/?api=1&query=Nakamachi+Street+Matsumoto" class="map-link" target="_blank">中町通</a></td><td>4 hr</td><td>步行</td><td>黑城與櫻花雪山絕景，逛青蛙街</td></tr>
+                <tr class="day-row"><td colspan="5">📅 Day 5：4月16日 (四) - 松本古城藝術</td></tr>
+                <tr><td>上午</td><td>🎨 <a href="https://www.google.com/maps/search/?api=1&query=Matsumoto+City+Museum+of+Art" class="map-link" target="_blank">松本市美術館</a></td><td>1.5 hr</td><td>步行</td><td>草間彌生點點展，標誌性大南瓜</td></tr>
+                <tr><td>下午</td><td>🏯 <a href="https://www.google.com/maps/search/?api=1&query=Matsumoto+Castle" class="map-link" target="_blank">國寶松本城</a> & <a href="https://www.google.com/maps/search/?api=1&query=Nakamachi+Street+Matsumoto" class="map-link" target="_blank">中町通</a></td><td>4 hr</td><td>步行</td><td>黑城與櫻花雪山絕景，逛青蛙街</td></tr>
 
-            <tr class="day-row"><td colspan="5">📅 Day 6：4月17日 (五) - 上高地開山</td></tr>
-            <tr><td>上午</td><td>🏔️ <a href="https://www.google.com/maps/search/?api=1&query=Taisho+Pond+Kamikochi" class="map-link" target="_blank">上高地 (大正池)</a></td><td>4 hr</td><td>松本電鐵+巴士</td><td>開山首日！07:15 班次人最少</td></tr>
-            <tr><td>下午</td><td>🚂 松本 ➝ 名古屋</td><td>2.2 hr</td><td>JR Shinano 18號</td><td>16:30發車，回名古屋取大行李</td></tr>
+                <tr class="day-row"><td colspan="5">📅 Day 6：4月17日 (五) - 上高地開山</td></tr>
+                <tr><td>上午</td><td>🏔️ <a href="https://www.google.com/maps/search/?api=1&query=Taisho+Pond+Kamikochi" class="map-link" target="_blank">上高地 (大正池)</a></td><td>4 hr</td><td>松本電鐵+巴士</td><td>開山首日！07:15 班次人最少</td></tr>
+                <tr><td>下午</td><td>🚂 松本 ➝ 名古屋</td><td>2.2 hr</td><td>JR Shinano 18號</td><td>16:30發車，回名古屋取大行李</td></tr>
 
-            <tr class="day-row"><td colspan="5">📅 Day 7：4月18日 (六) - 返台</td></tr>
-            <tr><td>上午</td><td>🛍️ <a href="https://www.google.com/maps/search/?api=1&query=JR+Takashimaya+Nagoya" class="map-link" target="_blank">名古屋站商圈</a></td><td>5 hr</td><td>步行</td><td>Bic Camera、高島屋最後補貨</td></tr>
-            <tr><td>下午</td><td>🛫 <b>星宇 JX839</b></td><td>-</td><td>19:55 起飛</td><td>17:30 抵機場報到，預計 22:00 抵台</td></tr>
-        </tbody>
-    </table>
+                <tr class="day-row"><td colspan="5">📅 Day 7：4月18日 (六) - 返台</td></tr>
+                <tr><td>上午</td><td>🛍️ <a href="https://www.google.com/maps/search/?api=1&query=JR+Takashimaya+Nagoya" class="map-link" target="_blank">名古屋站商圈</a></td><td>5 hr</td><td>步行</td><td>Bic Camera、高島屋最後補貨</td></tr>
+                <tr><td>下午</td><td>🛫 <b>星宇 JX839</b></td><td>-</td><td>19:55 起飛</td><td>17:30 抵機場報到，預計 22:00 抵台</td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div id="page2" class="page">
@@ -124,17 +160,14 @@
                 <label class="filter-label"><input type="checkbox" value="景點" class="f-type"> 景點</label>
                 <label class="filter-label"><input type="checkbox" value="住宿" class="f-type"> 住宿</label>
                 <label class="filter-label"><input type="checkbox" value="餐廳" class="f-type" id="foodCheck"> 餐廳</label>
-                <select id="subFood" class="search-box" style="margin-top:5px; border:1px solid #ccc; padding:8px;">
+                <select id="subFood" class="search-box" style="margin-top:5px; padding:8px;">
                     <option value="all">次分類: 全部美食</option>
-                    <option value="鰻魚飯">鰻魚飯</option>
-                    <option value="飛驒牛">飛驒牛 / 燒肉</option>
-                    <option value="拉麵">拉麵</option>
-                    <option value="甜點">甜點</option>
-                    <option value="麵包">麵包店</option>
-                    <option value="炸豬排">炸豬排</option>
-                    <option value="咖啡店">咖啡店</option>
-                    <option value="蕎麥麵">蕎麥麵</option>
-                    <option value="其他">其他</option> </select>
+                    <option value="鰻魚飯">鰻魚飯</option><option value="飛驒牛">飛驒牛 / 燒肉</option>
+                    <option value="拉麵">拉麵</option><option value="甜點">甜點</option>
+                    <option value="麵包">麵包店</option><option value="炸豬排">炸豬排</option>
+                    <option value="咖啡店">咖啡店</option><option value="蕎麥麵">蕎麥麵</option>
+                    <option value="其他">其他</option>
+                </select>
             </div>
             <div class="filter-group">
                 <h4>⭐ Tabelog 評分 (餐廳)</h4>
@@ -151,20 +184,23 @@
 </div>
 
 <div id="page3" class="page">
-    <div style="background:white; padding:20px; border-radius:8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-        <h3 style="color:var(--primary);">💰 摺疊式記帳板 <button onclick="fetchRate()" style="padding:4px 8px; cursor:pointer;">🔄 獲取即時匯率</button></h3>
-        <p>參考匯率 (JPY>TWD): <b id="liveRate">0.2100</b> <span style="font-size:0.85em; color:#666;">(獲取最新匯率僅套用於新項目，歷史資料不受影響)</span></p>
+    <div style="background:white; padding: clamp(15px, 3vw, 25px); border-radius:8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <h3 style="color:var(--primary); display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+            💰 摺疊式記帳板 
+            <button onclick="fetchRate()" style="padding:6px 12px; cursor:pointer; background:#27AE60; color:white; border:none; border-radius:4px; font-size:0.85em; white-space:nowrap;">🔄 獲取即時匯率</button>
+        </h3>
+        <p style="font-size:0.95em;">參考匯率 (JPY>TWD): <b id="liveRate" style="color:var(--primary); font-size:1.1em;">0.2100</b> <br><span style="font-size:0.85em; color:#666;">(獲取最新匯率僅套用於新項目，歷史資料不受影響)</span></p>
         
         <div id="accGroups">
             </div>
 
-        <div style="display:flex; justify-content:center; margin-top:20px;">
-            <div class="sum-card" style="max-width:400px;">
+        <div class="summary-box">
+            <div class="sum-card">
                 <h4>✨ 整趟行程總支出 ✨</h4>
-                <p id="grandTotal">0 JPY / 0 TWD</p>
+                <p id="grandTotal">0 JPY<br><span style="font-size:0.7em; color:#666;">0 TWD</span></p>
             </div>
         </div>
-        <div style="max-width:600px; margin:40px auto;">
+        <div style="max-width:600px; margin:40px auto; padding:0 10px;">
             <h4 style="text-align:center;">📊 支出結構與比例分析</h4>
             <canvas id="accChart"></canvas>
         </div>
@@ -179,7 +215,7 @@ function switchTab(id, b) {
     if(id==='page3') calcTotal();
 }
 
-// 完整資料庫資料 (已補齊 42 筆)
+// ============= 全量 42 筆資料庫 =============
 const db = [
     // 名古屋
     { name: "まるや本店 名駅店", region: "名古屋", type: "餐廳", sub: "鰻魚飯", score: 3.68, price: "3000-5000", hours: "11:00-23:00", closed: "無休", desc: "🏆2024百名店。名鐵百貨9F便利性最高。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/aichi/A2301/A230101/23004983/" },
@@ -203,7 +239,7 @@ const db = [
     { name: "桔梗屋", region: "飛驒高山", type: "餐廳", sub: "拉麵", score: 3.55, price: "1000-1500", hours: "11:00-23:30", closed: "週四", desc: "牛骨高湯拉麵老店。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/gifu/A2104/A210401/21001460/" },
     { name: "飛驒 こって牛", region: "飛驒高山", type: "餐廳", sub: "飛驒牛", score: 3.58, price: "1000-1500", hours: "10:00-17:00", closed: "無休", desc: "必排小吃！飛驒牛握壽司。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/gifu/A2104/A210401/21011888/" },
     { name: "坂口屋", region: "飛驒高山", type: "餐廳", sub: "拉麵", score: 3.55, price: "1500-2500", hours: "10:30-15:00", closed: "週二", desc: "老街內，蕎麥麵與牛壽司雙享受。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/gifu/A2104/A210401/21001099/" },
-    { name: "Train Bleu", region: "飛驒高山", type: "餐廳", sub: "麵包", score: 3.91, price: "1000-2000", hours: "09:30-18:00", closed: "週三", desc: "🏆百名店。世界級可頌。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/gifu/A2104/A210401/21000007/" },
+    { name: "Train Bleu", region: "飛驒高山", type: "餐廳", sub: "麵包", score: 3.91, price: "1000-2000", hours: "09:30-18:00", closed: "週三", desc: "🏆百名店。世界冠軍丹麥麵包。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/gifu/A2104/A210401/21000007/" },
     { name: "喫茶去 かつて", region: "飛驒高山", type: "餐廳", sub: "咖啡店", score: 3.53, price: "1000-1500", hours: "10:00-17:00", closed: "週三", desc: "町屋內的抹茶聖代。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/gifu/A2104/A210401/21000985/" },
     { name: "伴茶夢", region: "飛驒高山", type: "餐廳", sub: "咖啡店", score: 3.48, price: "1000-1500", hours: "08:00-17:00", closed: "週二", desc: "復古昭和早餐套餐。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/gifu/A2104/A210401/21001150/" },
     // 松本
@@ -221,17 +257,17 @@ const db = [
     { name: "パンセ小松", region: "松本市", type: "餐廳", sub: "麵包", score: 3.52, price: "1000以下", hours: "08:30-19:00", closed: "日、一", desc: "長野名物！牛乳麵包。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200201/20001153/" },
     { name: "サパンジ", region: "松本市", type: "餐廳", sub: "麵包", score: 3.64, price: "1000-1500", hours: "08:00-18:00", closed: "二、三", desc: "🏆百名店。最強硬式歐包。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200201/20018442/" },
     // 上高地
-    { name: "5HORN 上高地", region: "上高地", type: "餐廳", sub: "甜點", score: 3.58, price: "1500-2500", hours: "09:00-16:00", closed: "封山期", desc: "完熟信州蘋果派，河童橋旁絕景。", map: "https://www.google.com/maps/search/?api=1&query=hotel+around+TAKAYAMA1", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20000109/" },
-    { name: "河童食堂", region: "上高地", type: "餐廳", sub: "炸豬排", score: 3.48, price: "1500-2500", hours: "10:00-15:00", closed: "封山期", desc: "豚汁定食與山賊燒。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20001227/" },
+    { name: "5HORN 上高地", region: "上高地", type: "餐廳", sub: "甜點", score: 3.58, price: "1500-2500", hours: "09:00-16:00", closed: "封山期", desc: "必吃完熟信州蘋果派。", map: "https://www.google.com/maps/search/?api=1&query=hotel+around+TAKAYAMA1", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20000109/" },
+    { name: "河童食堂", region: "上高地", type: "餐廳", sub: "炸豬排", score: 3.48, price: "1500-2500", hours: "10:00-15:00", closed: "封山期", desc: "豚汁定食與溫暖補給。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20001227/" },
     { name: "帝國飯店 アルペンローゼ", region: "上高地", type: "餐廳", sub: "其他", score: 3.62, price: "3000-5000", hours: "11:00-14:30", closed: "封山期", desc: "頂級紅酒燉牛肉咖哩。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20001395/" },
     { name: "トワサンク", region: "上高地", type: "餐廳", sub: "甜點", score: 3.45, price: "1000-2000", hours: "08:30-16:00", closed: "封山期", desc: "熱烤蘋果派與霜淇淋。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20001309/" },
     { name: "上高地食堂", region: "上高地", type: "餐廳", sub: "其他", score: 3.42, price: "1000-2000", hours: "08:00-16:00", closed: "封山期", desc: "岩魚鹽烤定食。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20001244/" },
-    { name: "Le Blanc", region: "上高地", type: "餐廳", sub: "咖啡店", score: 3.46, price: "1500-3000", hours: "09:00-15:30", closed: "封山期", desc: "白樺莊內，法式蒙布朗。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20013629/" },
+    { name: "Le Blanc", region: "上高地", type: "餐廳", sub: "咖啡店", score: 3.46, price: "1500-3000", hours: "09:00-15:30", closed: "封山期", desc: "白樺莊內法式蒙布朗。", map: "https://mymaps.google.com/", tab: "https://tabelog.com/tw/nagano/A2002/A200202/20013629/" },
     // 景點住宿
     { name: "臥龍櫻 (千年古櫻)", region: "飛驒高山", type: "景點", sub: "景點", score: 0, price: "免費", hours: "24H", closed: "無", desc: "1100年歷史古櫻，4/13滿開。", map: "https://www.google.com/maps/search/?api=1&query=Garyu+Sakura", tab: "" },
-    { name: "國寶松本城", region: "松本市", type: "景點", sub: "景點", score: 0, price: "700", hours: "08:30-17:00", closed: "年末年始", desc: "黑色天守。賞櫻百選名所。", map: "https://www.google.com/maps/search/?api=1&query=Matsumoto+Castle", tab: "" },
+    { name: "國寶松本城", region: "松本市", type: "景點", sub: "景點", score: 0, price: "700", hours: "08:30-17:00", closed: "年末年始", desc: "黑色天守。拍攝櫻吹雪名所。", map: "https://www.google.com/maps/search/?api=1&query=Matsumoto+Castle", tab: "" },
     { name: "Comfort Hotel Meiekiminami", region: "名古屋", type: "住宿", sub: "住宿", score: 0, price: "依預算", hours: "24H", closed: "無", desc: "大行李宅配終點。", map: "https://www.google.com/maps/search/?api=1&query=Comfort+Hotel+Nagoya+Meiekiminami", tab: "" },
-    { name: "hotel around TAKAYAMA", region: "飛驒高山", type: "住宿", sub: "住宿", score: 0, price: "依預算", hours: "24H", closed: "無", desc: "近車站，可代寄行李。", map: "https://www.google.com/maps/search/?api=1&query=hotel+around+TAKAYAMA", tab: "" },
+    { name: "hotel around TAKAYAMA", region: "飛驒高山", type: "住宿", sub: "住宿", score: 0, price: "依預算", hours: "24H", closed: "無", desc: "近高山站，可代寄行李。", map: "https://www.google.com/maps/search/?api=1&query=hotel+around+TAKAYAMA", tab: "" },
     { name: "東橫INN 松本站東口", region: "松本市", type: "住宿", sub: "住宿", score: 0, price: "依預算", hours: "24H", closed: "無", desc: "攻上高地首選基地。", map: "https://www.google.com/maps/search/?api=1&query=Toyoko+INN+Matsumoto+Station+Higashiguchi", tab: "" }
 ];
 
@@ -257,7 +293,7 @@ function renderDB() {
             grid.innerHTML += `<div class="card ${cardClass}">
                 <h3>${item.name}</h3>
                 <div><span class="tag region">📍 ${item.region}</span><span class="tag">${item.sub || item.type}</span>${item.score > 0 ? `<span class="tag score">⭐ ${item.score}</span>` : ''}</div>
-                <ul class="info-list"><li><b>💰 價格:</b> ${item.price} JPY</li><li><b>🕒 時間:</b> ${item.hours}</li><li><b>📅 公休:</b> ${item.closed || '無'}</li><li><b>📝 備註:</b> ${item.desc}</li></ul>
+                <ul class="info-list"><li><b>💰 預算:</b> ${item.price} JPY</li><li><b>🕒 時間:</b> ${item.hours}</li><li><b>📅 公休:</b> ${item.closed || '無'}</li><li><b>📝 備註:</b> ${item.desc}</li></ul>
                 <div class="card-actions"><a href="${item.map}" target="_blank" class="btn-map">🗺️ 地圖</a>${item.tab ? `<a href="${item.tab}" target="_blank" class="btn-tabelog">🍽️ Tabelog</a>` : ''}</div>
             </div>`;
         }
@@ -265,7 +301,7 @@ function renderDB() {
     document.getElementById('resultCount').innerText = `✅ 找到 ${count} 筆符合資料`;
 }
 
-// ============= 記帳系統核心：摺疊分類與獨立匯率邏輯 =============
+// ============= 記帳系統核心：RWD 摺疊分類與獨立匯率邏輯 =============
 let liveRate = 0.2100; let accChart = null;
 const dates = ["4/12", "4/13", "4/14", "4/15", "4/16", "4/17", "4/18"];
 const cats = ["景點門票", "交通費用", "餐飲(三餐)", "餐飲(咖啡)", "餐飲(麵包)", "餐飲(其他)", "伴手禮", "其他支出"];
@@ -274,8 +310,7 @@ function fetchRate() {
     fetch('https://open.er-api.com/v6/latest/JPY').then(r=>r.json()).then(d=>{ 
         liveRate = d.rates.TWD; 
         document.getElementById('liveRate').innerText = liveRate.toFixed(4); 
-        // 修正：不再遍歷既有 input，保障歷史資料不變。
-        alert("匯率更新成功！後續新增的支出將採用最新匯率。"); 
+        alert("匯率更新成功！後續新增的支出將自動採用最新匯率。"); 
     }); 
 }
 
@@ -288,16 +323,18 @@ function initAccounting() {
         <div class="day-group" id="group-${dKey}">
             <div class="day-header" onclick="this.nextElementSibling.classList.toggle('open')">
                 <span>📅 ${d} 支出明細</span>
-                <span class="subtotal-text">日總計: <span id="jpy-${dKey}">0</span> JPY / <span id="twd-${dKey}">0</span> TWD ▾</span>
+                <span class="subtotal-text">日小計: <span id="jpy-${dKey}">0</span> JPY / <span id="twd-${dKey}">0</span> TWD ▾</span>
             </div>
             <div class="day-content ${idx === 0 ? 'open' : ''}" id="content-${dKey}">
-                <table class="acc-table" style="width:100%; border-collapse: collapse; margin-bottom:15px;">
-                    <thead><tr style="background:#f1f1f1; text-align:left;">
-                        <th width="20%">分類</th><th width="25%">說明</th><th width="15%">日幣</th><th width="15%">匯率</th><th width="15%">台幣</th><th>刪</th>
-                    </tr></thead>
-                    <tbody id="body-${dKey}"></tbody>
-                </table>
-                <button class="tab-btn" style="background:var(--primary); color:white; border-radius:5px; padding:6px 12px; font-size:0.9em;" onclick="addRow('${d}')">+ 增加 ${d} 支出</button>
+                <div class="table-responsive">
+                    <table class="acc-table" style="width:100%; border-collapse: collapse; margin-bottom:15px; min-width: 600px;">
+                        <thead><tr style="background:#f1f1f1; text-align:left;">
+                            <th width="18%">分類</th><th width="24%">說明</th><th width="18%">日幣</th><th width="15%">匯率</th><th width="18%">台幣</th><th width="7%">刪</th>
+                        </tr></thead>
+                        <tbody id="body-${dKey}"></tbody>
+                    </table>
+                </div>
+                <button class="tab-btn" style="background:var(--primary); color:white; border-radius:5px; padding:8px 12px; font-size:0.9em; display:block; width:100%; max-width:200px; margin: 10px auto 0;" onclick="addRow('${d}')">+ 增加 ${d} 支出</button>
             </div>
         </div>`;
     });
@@ -315,7 +352,7 @@ function addRow(date) {
         <td><input type="number" class="e-jpy" value="0" oninput="syncRow(this)"></td>
         <td><input type="number" class="e-rate" value="${liveRate.toFixed(4)}" step="0.001" oninput="syncRow(this)"></td>
         <td><input type="number" readonly class="e-twd" value="0"></td>
-        <td onclick="this.parentElement.remove(); calcTotal();" style="cursor:pointer; color:red; font-weight:bold;">✖</td>`;
+        <td onclick="this.parentElement.remove(); calcTotal();" style="cursor:pointer; color:red; font-weight:bold; text-align:center;">✖</td>`;
     tbody.appendChild(tr);
 }
 
@@ -349,7 +386,7 @@ function calcTotal() {
         document.getElementById(`twd-${dKey}`).innerText = dayTwd.toLocaleString();
     });
 
-    document.getElementById('grandTotal').innerText = `${grandJpy.toLocaleString()} JPY / ${grandTwd.toLocaleString()} TWD`;
+    document.getElementById('grandTotal').innerHTML = `${grandJpy.toLocaleString()} JPY<br><span style="font-size:0.7em; color:#666;">${grandTwd.toLocaleString()} TWD</span>`;
     renderChart(catSums, grandTwd);
 }
 
